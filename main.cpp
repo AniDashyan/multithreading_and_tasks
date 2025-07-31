@@ -3,7 +3,6 @@
 #include <chrono>
 #include <atomic>
 #include <future>
-
 #include "ThreadPool.h"
 
 void partial_sum(const std::vector<int>& data, size_t start, size_t end, int& result) {
@@ -25,7 +24,6 @@ int parallel_sum(const std::vector<int>& data, int num_threads) {
     return std::accumulate(partials.begin(), partials.end(), 0);
 }
 
-// ---------------------- THREAD CREATION OVERHEAD -----------------------------
 void measure_thread_overhead(int iterations) {
     auto start = std::chrono::steady_clock::now();
     for (int i = 0; i < iterations; ++i) {
@@ -34,11 +32,9 @@ void measure_thread_overhead(int iterations) {
     auto end = std::chrono::steady_clock::now();
     std::chrono::duration<double> time = end - start;
     std::cout << "Thread creation/destruction time for " << iterations << " iterations: "
-              << time.count() << " ns\n";
+              << time.count() * 1e9 / iterations << " us per thread\n";
 }
 
-
-// -------- std::async-based parallel sum --------
 int async_sum(const std::vector<int>& data, int num_tasks) {
     std::vector<std::future<int>> futures;
     size_t chunk_size = data.size() / num_tasks;
@@ -56,7 +52,6 @@ int async_sum(const std::vector<int>& data, int num_tasks) {
     return total;
 }
 
-// ------------------ THREAD POOL PARTIAL SUM ----------------------------------
 int threadpool_sum(const std::vector<int>& data, int num_threads) {
     ThreadPool pool(num_threads);
     std::vector<int> partials(num_threads, 0);
@@ -83,23 +78,34 @@ int threadpool_sum(const std::vector<int>& data, int num_threads) {
 template<typename Func>
 void measure_time(const std::string& label, int from, int to, Func compute) {
     std::cout << "\n[ " << label << " Benchmark ]\n";
+
+    std::vector<long long> durations;
+    long long base_time = 0;
+
     for (int i = from; i <= to; ++i) {
         auto start = std::chrono::steady_clock::now();
         int total = compute(i);
         auto end = std::chrono::steady_clock::now();
-        auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
+        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
 
-        std::cout << label << ": " << i
-                  << ", Time: " << duration << " ns"
-                  << ", Sum: " << total << "\n";
+        durations.push_back(duration);
+        if (i == 1) base_time = duration;
+
+        std::cout << label << " (" << i << " threads): "
+                  << duration << " us, Sum = " << total << "\n";
     }
+
+    double avg_time = std::accumulate(durations.begin(), durations.end(), 0LL) / static_cast<double>(durations.size());
+    double speedup = base_time / avg_time;
+
+    std::cout << "-> Average Time: " << static_cast<long long>(avg_time) << " us\n";
+    std::cout << "-> Speedup over 1-thread: " << speedup << "x\n";
 }
 
 int main() {
     const size_t N = 1'000'000;
     std::vector<int> data(N, 1);
 
-    std::cout << "\n[ Benchmark: std::thread scaling ]\n";
     measure_time("std::thread", 1, 8, [&](int threads) {
         return parallel_sum(data, threads);
     });
@@ -111,8 +117,7 @@ int main() {
     std::cout << "\n[ Benchmark: Thread creation overhead ]\n";
     measure_thread_overhead(100'000);
 
-    std::cout << "\n[ Benchmark: ThreadPool with " << 8 << " workers ]\n";
-    measure_time("std::thread", 1, 8, [&](int threads) {
+    measure_time("ThreadPool", 1, 8, [&](int threads) {
         return threadpool_sum(data, threads);
     });
 
