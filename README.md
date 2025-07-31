@@ -31,42 +31,44 @@ cmake --build build
 ## Example Output
 
 ```
-[ Benchmark: std::thread scaling ]
-
 [ std::thread Benchmark ]
-std::thread: 1, Time: 1619300 ns, Sum: 1000000
-std::thread: 2, Time: 494800 ns, Sum: 1000000
-std::thread: 3, Time: 429300 ns, Sum: 1000000
-std::thread: 4, Time: 536600 ns, Sum: 1000000
-std::thread: 5, Time: 865900 ns, Sum: 1000000
-std::thread: 6, Time: 560500 ns, Sum: 1000000
-std::thread: 7, Time: 630300 ns, Sum: 1000000
-std::thread: 8, Time: 647500 ns, Sum: 1000000
+std::thread (1 threads): 2838 us, Sum = 1000000
+std::thread (2 threads): 881 us, Sum = 1000000
+std::thread (3 threads): 585 us, Sum = 1000000
+std::thread (4 threads): 1834 us, Sum = 1000000
+std::thread (5 threads): 802 us, Sum = 1000000
+std::thread (6 threads): 863 us, Sum = 1000000
+std::thread (7 threads): 1014 us, Sum = 1000000
+std::thread (8 threads): 845 us, Sum = 1000000
+-> Average Time: 1207 us
+-> Speedup over 1-thread: 2.34982x
 
 [ std::async Benchmark ]
-std::async: 1, Time: 471600 ns, Sum: 1000000
-std::async: 2, Time: 337900 ns, Sum: 1000000
-std::async: 3, Time: 843800 ns, Sum: 1000000
-std::async: 4, Time: 748100 ns, Sum: 1000000
-std::async: 5, Time: 684200 ns, Sum: 1000000
-std::async: 6, Time: 621100 ns, Sum: 1000000
-std::async: 7, Time: 1535900 ns, Sum: 1000000
-std::async: 8, Time: 1361100 ns, Sum: 1000000
+std::async (1 threads): 427 us, Sum = 1000000
+std::async (2 threads): 483 us, Sum = 1000000
+std::async (3 threads): 1818 us, Sum = 1000000
+std::async (4 threads): 1460 us, Sum = 1000000
+std::async (5 threads): 932 us, Sum = 1000000
+std::async (6 threads): 1091 us, Sum = 1000000
+std::async (7 threads): 1968 us, Sum = 1000000
+std::async (8 threads): 835 us, Sum = 1000000
+-> Average Time: 1126 us
+-> Speedup over 1-thread: 0.378966x
 
 [ Benchmark: Thread creation overhead ]
-Thread creation/destruction time for 100000 iterations: 9.77219 ns
+Thread creation/destruction time for 100000 iterations: 95137.9 us per thread
 
-[ Benchmark: ThreadPool with 8 workers ]
-
-[ std::thread Benchmark ]
-std::thread: 1, Time: 529300 ns, Sum: 1000000
-std::thread: 2, Time: 475400 ns, Sum: 1000000
-std::thread: 3, Time: 505300 ns, Sum: 1000000
-std::thread: 4, Time: 736700 ns, Sum: 1000000
-std::thread: 5, Time: 655000 ns, Sum: 1000000
-std::thread: 6, Time: 545100 ns, Sum: 1000000
-std::thread: 7, Time: 761900 ns, Sum: 1000000
-std::thread: 8, Time: 1422300 ns, Sum: 1000000
+[ ThreadPool Benchmark ]
+ThreadPool (1 threads): 676 us, Sum = 1000000
+ThreadPool (2 threads): 703 us, Sum = 1000000
+ThreadPool (3 threads): 549 us, Sum = 1000000
+ThreadPool (4 threads): 489 us, Sum = 1000000
+ThreadPool (5 threads): 1114 us, Sum = 1000000
+ThreadPool (6 threads): 573 us, Sum = 1000000
+ThreadPool (7 threads): 1052 us, Sum = 1000000
+ThreadPool (8 threads): 6325 us, Sum = 1000000
+-> Average Time: 1435 us
+-> Speedup over 1-thread: 0.471039x
 ```
 
 ## How does it work?
